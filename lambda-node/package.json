@@ -10,5 +10,13 @@
     "eslint": "^8.27.0",
     "prettier": "^2.7.1",
     "typescript": "^4.8.4"
-  }
+  },
+  "dependencies": {
+    "husky": "^8.0.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
+  }  
 }
