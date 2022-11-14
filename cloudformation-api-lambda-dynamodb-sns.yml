@@ -38,8 +38,6 @@ Resources:
           Protocol: email
       TopicName:
         Ref: SNSTopicName
-    #DependsOn:
-    #- IAMRole
   LambdaFunction:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -181,8 +179,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
-    #DependsOn:
-    # - IAMRole
   APIGatewayRestAPI:
     Type: "AWS::ApiGateway::RestApi"
     Properties:
