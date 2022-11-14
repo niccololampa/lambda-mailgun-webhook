@@ -1,0 +1,35 @@
+{
+  "name": "lambda-node-mailgunhook",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "build-zip": "yarn build && yarn zip",
+    "zip": "yarn zip-build dist ./",
+    "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
+    "lint:fix": "eslint --fix './**/*.{js,jsx,ts,tsx,json}'",
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "eslint": "^8.27.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.2",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1253.0",
+    "crypto": "^1.0.1",
+    "zip-build": "^1.7.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint"
+    }
+  },
+  "license": "UNLICENSED"
+}
