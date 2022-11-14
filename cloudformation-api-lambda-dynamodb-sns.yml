@@ -1,0 +1,288 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  MailGunSigningKey:
+    Type: String
+    # add mailgun http webhook signing key here
+    Default: ""
+  SNSSubscriptionEmail:
+    Type: String
+    # add email here to receive the SNS notification when mailgun webhook is received.
+    Default: ""
+  SNSTopicName:
+    Type: String
+    Default: MailGunWebHookEvents2
+  LambdaFuncName:
+    Type: String
+    Default: MailgunWebHook2
+  DynamoDBTableName:
+    Type: String
+    Default: MailGunWebHookEvents2
+  APIName:
+    Type: String
+    Default: MailGunWebHook2
+  APIResourcePath:
+    Type: String
+    Default: mailgunwebhook
+  EnvironmentName:
+    Type: String
+    Default: dev
+  AWSRegionSelected:
+    Type: String
+    Default: ap-southeast-1
+Resources:
+  SNSPublish:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      Subscription:
+        - Endpoint: !Ref SNSSubscriptionEmail
+          Protocol: email
+      TopicName:
+        Ref: SNSTopicName
+    #DependsOn:
+    #- IAMRole
+  LambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        ZipFile: |
+          "use strict";
+           var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+               function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+               return new (P || (P = Promise))(function (resolve, reject) {
+                   function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+                   function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+                   function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+                   step((generator = generator.apply(thisArg, _arguments || [])).next());
+               });
+           };
+           Object.defineProperty(exports, "__esModule", { value: true });
+           const AWS = require("aws-sdk");
+           const crypto = require("crypto");
+           AWS.config.update({ region: process.env.AWS_REGION_SELECTED });
+           const dynamo = new AWS.DynamoDB.DocumentClient();
+           // provide by secrets. Also encrypt using AWS key manager.
+           const signingKey = process.env.SIGNING_KEY;
+           // function to verify if event comes from mailgun
+           const verify = ({ timestamp, token, signature, }) => {
+               const encodedToken = crypto
+                   .createHmac("sha256", signingKey)
+                   .update(timestamp.concat(token))
+                   .digest("hex");
+               return encodedToken === signature;
+           };
+           exports.handler = (event) => __awaiter(void 0, void 0, void 0, function* () {
+               const eventJSON = JSON.parse(event.body);
+               let statusCode = "200";
+               let dbwrite = true;
+               let snsPublished = false;
+               const { timestamp, token, signature } = eventJSON.signature;
+               // confirm if mailgun event
+               const verified = verify({ timestamp, token, signature });
+               // do not process the request if not a mailgun event
+               if (!verified) {
+                   return {
+                       statusCode: 403,
+                       headers: {
+                           "Content-Type": "application/json",
+                       },
+                       body: { error: "Unauthorized" },
+                   };
+               }
+               // Log for CloudWatch
+               console.log(event);
+               // create DynamoDB Table  "MailGunWebHookEvents" in Singapore region. with id (string) as partition key and date (number) as sort key
+               // make sure Lambda function has permissions to write to DynamoDB.
+               const dynamoParam = {
+                   Item: {
+                       id: eventJSON["event-data"].id,
+                       date: Date.now(),
+                       webhookMap: eventJSON,
+                       webHookString: JSON.stringify(eventJSON),
+                   },
+                   TableName: process.env.DYNAMO_DB_TABLE_NAME,
+               };
+               try {
+                   yield dynamo.put(dynamoParam).promise();
+               }
+               catch (err) {
+                   statusCode = "400";
+                   dbwrite = false;
+                   // body = err.message;
+               }
+               // publish SNS
+               const snsMessage = {
+                   Provider: "MAILGUN",
+                   timestamp: eventJSON["signature"].timestamp,
+                   type: eventJSON["event-data"].event,
+               };
+               // Create promise and SNS service object
+               // TO DO create env for TOPIC ARN.
+               const snsParams = {
+                   Message: JSON.stringify(snsMessage),
+                   TopicArn: process.env.SNS_TOPIC_ARN,
+               };
+               const publishTextPromise = new AWS.SNS({ apiVersion: "2010-03-31" })
+                   .publish(snsParams)
+                   .promise();
+               // Handle promise's fulfilled/rejected states
+               yield publishTextPromise
+                   .then(function (data) {
+                   // Logs for Cloudwatch
+                   console.log(`Message ${snsParams.Message} sent to the topic ${snsParams.TopicArn}`);
+                   console.log("MessageID is " + data.MessageId);
+                   snsPublished = true;
+               })
+                   .catch(function (err) {
+                   console.error(err, err.stack);
+               });
+               const response = {
+                   statusCode,
+                   headers: {
+                       "Content-Type": "application/json",
+                   },
+                   isBase64Encoded: false,
+                   body: JSON.stringify({ dbwrite, snsPublished, snsMessage }),
+               };
+               return response;
+           });
+           //# sourceMappingURL=index.js.map
+      FunctionName:
+        Ref: LambdaFuncName
+      Handler: index.handler
+      Runtime: nodejs16.x
+      Role: !GetAtt IAMRole.Arn
+      Environment:
+        Variables:
+          AWS_REGION_SELECTED: !Ref AWSRegionSelected
+          DYNAMO_DB_TABLE_NAME: !Ref DynamoDBTableName
+          SIGNING_KEY: !Ref MailGunSigningKey
+          SNS_TOPIC_ARN: !Sub
+            - >-
+              arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}
+            - TopicName: !Ref SNSTopicName
+    DependsOn:
+      - DynamoDBTable
+      - SNSPublish
+  DynamoDBTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      TableName:
+        Ref: DynamoDBTableName
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: N
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: date
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+    #DependsOn:
+    # - IAMRole
+  APIGatewayRestAPI:
+    Type: "AWS::ApiGateway::RestApi"
+    Properties:
+      Name:
+        Ref: APIName
+      Parameters:
+        endpointConfigurationTypes: REGIONAL
+    DependsOn:
+      - LambdaFunction
+  APIGatewayResource:
+    Type: "AWS::ApiGateway::Resource"
+    Properties:
+      RestApiId: !Ref APIGatewayRestAPI
+      ParentId: !GetAtt
+        - APIGatewayRestAPI
+        - RootResourceId
+      PathPart:
+        Ref: APIResourcePath
+    DependsOn:
+      - APIGatewayRestAPI
+  APIGatewayMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      RestApiId: !Ref APIGatewayRestAPI
+      ResourceId: !Ref APIGatewayResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      MethodResponses:
+        - StatusCode: 200
+      Integration:
+        Type: AWS_PROXY
+        IntegrationResponses:
+          - StatusCode: 200
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFuncNameArn}/invocations
+          - LambdaFuncNameArn: !GetAtt LambdaFunction.Arn
+    DependsOn:
+      - APIGatewayResource
+  APIGatewayDeployment:
+    Type: "AWS::ApiGateway::Deployment"
+    Properties:
+      RestApiId: !Ref APIGatewayRestAPI
+      StageName:
+        Ref: EnvironmentName
+    DependsOn:
+      - APIGatewayMethod
+  APIGatewayPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Principal: apigateway.amazonaws.com
+    DependsOn:
+      - APIGatewayDeployment
+  IAMRole:
+    Type: "AWS::IAM::Role"
+    DependsOn:
+      - SNSPublish
+      - DynamoDBTable
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: Policy_api-lambda-db
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "dynamodb:BatchGetItem"
+                  - "dynamodb:BatchWriteItem"
+                  - "dynamodb:TagResource"
+                  - "dynamodb:UntagResource"
+                  - "dynamodb:PutItem"
+                  - "dynamodb:DeleteItem"
+                  - "dynamodb:GetItem"
+                  - "dynamodb:Scan"
+                  - "dynamodb:Query"
+                  - "dynamodb:UpdateItem"
+                Resource: !GetAtt DynamoDBTable.Arn
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "sns:*"
+                Resource: !Sub
+                  - >-
+                    arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}
+                  - TopicName: !Ref SNSTopicName
