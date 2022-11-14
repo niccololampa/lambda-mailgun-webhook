@@ -26,11 +26,12 @@ const verify = ({
 }
 
 exports.handler = async (event: any) => {
+    const eventJSON = JSON.parse(event.body)
     let statusCode = "200"
     let dbwrite = true
     let snsPublished = false
 
-    const { timestamp, token, signature } = event.signature
+    const { timestamp, token, signature } = eventJSON.signature
 
     // confirm if mailgun event
     const verified = verify({ timestamp, token, signature })
@@ -53,10 +54,10 @@ exports.handler = async (event: any) => {
     // make sure Lambda function has permissions to write to DynamoDB.
     const dynamoParam = {
         Item: {
-            id: event["event-data"].id,
+            id: eventJSON["event-data"].id,
             date: Date.now(),
-            webhookMap: event,
-            webHookString: JSON.stringify(event),
+            webhookMap: eventJSON,
+            webHookString: JSON.stringify(eventJSON),
         },
         TableName: process.env.DYNAMO_DB_TABLE_NAME,
     }
@@ -73,8 +74,8 @@ exports.handler = async (event: any) => {
 
     const snsMessage = {
         Provider: "MAILGUN",
-        timestamp: event["signature"].timestamp,
-        type: event["event-data"].event,
+        timestamp: eventJSON["signature"].timestamp,
+        type: eventJSON["event-data"].event,
     }
 
     // Create promise and SNS service object
@@ -108,7 +109,7 @@ exports.handler = async (event: any) => {
             "Content-Type": "application/json",
         },
         isBase64Encoded: false,
-        body: { dbwrite, snsPublished, snsMessage },
+        body: JSON.stringify({ dbwrite, snsPublished, snsMessage }),
     }
 
     return response
