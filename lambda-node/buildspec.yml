@@ -18,5 +18,5 @@ phases:
             - yarn build-zip
     post_build:
         commands:
-            - echo "Updating files in the S3 bucket..."
-            - aws s3 sync $S3Key  s3://$S3Bucket --delete
+            - echo "Uploading/Updating files in the S3 bucket..."
+            - aws s3 cp ./$S3Key  s3://$S3Bucket
