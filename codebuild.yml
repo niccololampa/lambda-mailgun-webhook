@@ -5,12 +5,10 @@ Description: github-codebuild
 Parameters:
   # *** This value must always be passed in when creating / updating stack
   # "NoEcho" is set to true, for security, so token won't be visible when examining the resulting stack
-  GitHubOAuthToken:
+  GitHubToken:
     Type: String
     NoEcho: true
-    MinLength: 93
-    MaxLength: 93
-    AllowedPattern: "[A-Za-z0-9_]*"
+    MinLength: 1
 
   # *** The remaining parameters should either be:
   # - overridden via changing "Default" here (PREFERABLE, since then they're in source control)
@@ -42,6 +40,15 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Ref S3Bucket
+      AccessControl: Private
+
+  # This resource allows to connect CodeBuild with Github using Personal Access Token.
+  CodeBuildSourceCredential:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      AuthType: PERSONAL_ACCESS_TOKEN
+      ServerType: GITHUB
+      Token: !Ref GitHubToken
 
   LambaNodeCodeBuild:
     Type: AWS::CodeBuild::Project
@@ -52,18 +59,19 @@ Resources:
         Location: !Sub https://github.com/${GitHubRepoOwner}/${GitHubRepo}.git
         GitCloneDepth: 1
         BuildSpec: lambda-node/buildspec.yml
+      SourceVersion: !Ref GitHubBranch
       Triggers:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
               Pattern: PUSH
-            - Type: HEAD_REF
-              # Pattern: ^refs/heads/feature/.*
-              Pattern: !Sub ^refs/heads/${GitHubBranch}
-              # Pattern: ^refs/heads/master
+            # - Type: HEAD_REF
+            #   # Pattern: ^refs/heads/feature/.*
+            # Pattern: !Sub ^refs/heads/${GitHubBranch}
+            # # Pattern: ^refs/heads/master
       Environment:
         Type: LINUX_CONTAINER
-        Image: aws/codebuild/standard:2.0
+        Image: aws/codebuild/standard:5.0
         ComputeType: BUILD_GENERAL1_SMALL
       ServiceRole: !GetAtt LambdaNodeCodeBuildRole.Arn
       Artifacts:
@@ -74,6 +82,7 @@ Resources:
           GroupName: !Sub ${CodeBuildName}-CloudWatchLogs-BuildLogGroup-Name
     DependsOn:
       - LambdaNodeCodeBuildRole
+      - CodeBuildSourceCredential
       - S3LambdaBucket
 
   LambdaNodeCodeBuildRole:
@@ -100,3 +109,12 @@ Resources:
                   - codebuild:*
                   - logs:*
                 Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                Resource:
+                  - !Sub arn:aws:s3:::${S3Bucket}
+                  - !Sub arn:aws:s3:::${S3Bucket}/*
+
+    DependsOn:
+      - S3LambdaBucket
