@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "build-zip": "yarn build && yarn zip",
-    "zip": "yarn zip-build dist ./",
+    "zip": "yarn zip-build dist ./ -t mailgunwebhooklambda.zip",
     "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
     "lint:fix": "eslint --fix './**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'"
