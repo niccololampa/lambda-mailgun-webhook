@@ -1,7 +1,7 @@
 version: 0.2
 env:
     variables:
-        S3Bucket: "mailgunwebhookbucket2"
+        S3Bucket: "mailgunwebhookbucket3"
         S3Key: "mailgunwebhooklambda.zip"
 phases:
     install:
