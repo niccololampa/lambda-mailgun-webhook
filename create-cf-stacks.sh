@@ -4,7 +4,7 @@
 
 # Change these variables if you need to
 AWS_REGION="ap-southeast-1"
-CLOUDFORMATION_S3_STACK_NAME="mailgunwebhook-s3-y"
+CLOUDFORMATION_S3_STACK_NAME="mailgunwebhook-s3"
 CLOUDFORMATION_MAIN_STACK_NAME="mailgunwebhook-main"
 S3_BUCKET_NAME="mailgunwebhookbucket"
 S3_Key="mailgunwebhooklambda.zip"
@@ -20,13 +20,19 @@ echo
 
 set -eu
 
-echo "Creating CloudFormation Stack for S3 Bucket lambda zip file"
+echo "Creating CloudFormation S3 Bucket Stack as location for lambda zip file upload"
 aws cloudformation create-stack \
         --region $AWS_REGION \
         --no-cli-pager \
         --stack-name $CLOUDFORMATION_S3_STACK_NAME \
         --parameters ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET_NAME \
         --template-body file://cloudformation-s3.yml
+
+echo "Waiting for CloudFormation S3 Bucket Stack to finish..."
+aws cloudformation wait stack-create-complete --stack-name $CLOUDFORMATION_S3_STACK_NAME --region $AWS_REGION
+
+
+echo "Finished creating CloudFormation S3 Stack"
 
 echo "Installing project dependencies"
 cd lambda-node
@@ -55,4 +61,8 @@ aws cloudformation create-stack \
         --template-body file://cloudformation-api-lambda-dynamodb-sns-cb.yml \
         --parameters ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET_NAME ParameterKey=GitHubToken,ParameterValue=$GITHUB_TOKEN ParameterKey=MailgunSigningKey,ParameterValue=$MAILGUN_KEY ParameterKey=SNSSubscriptionEmail,ParameterValue=$SNS_EMAIL
 
-echo "Executed Cloud Formation Create Commands"
+echo "Waiting for CloudFormation Main Stack to finish..."
+aws cloudformation wait stack-create-complete --stack-name $CLOUDFORMATION_MAIN_STACK_NAME --region $AWS_REGION
+
+echo "Finished creating CloudFormation Main Stack"
+echo "Executed CloudFormation Create Commands"
