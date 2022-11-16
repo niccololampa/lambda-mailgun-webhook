@@ -84,7 +84,7 @@ exports.handler = async (event: APIGatewayEvent) => {
 
     // publish SNS
     const snsMessage = {
-        Provider: "MAILGUN",
+        Provider: "Mailgun",
         timestamp: eventJSON["signature"].timestamp,
         type: eventJSON["event-data"].event,
     }
