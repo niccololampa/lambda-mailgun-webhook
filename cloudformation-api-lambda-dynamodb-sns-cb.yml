@@ -258,6 +258,7 @@ Resources:
                   - cloudformation:*
                   - codebuild:*
                   - logs:*
+                  - lambda:*
                 Resource: "*"
               - Effect: Allow
                 Action:
