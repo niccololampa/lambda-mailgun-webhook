@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Stack for MailgunWebhook to setup S3 for upload of zip file for lambda
+
+Parameters:
+  S3Bucket:
+    Type: String
+    Default: mailgunwebhookbucket
+
+Resources:
+  S3LambdaBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref S3Bucket
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true

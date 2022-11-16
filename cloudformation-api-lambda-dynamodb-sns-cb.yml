@@ -1,40 +1,79 @@
 AWSTemplateFormatVersion: 2010-09-09
+Description: Stack for MailgunWehook GatewayAPI, Lambda, DynamoDB, SNS, IAM, and CodeBuild(CI/CD tracking Github Repo).
+
+# Run S3 Codeformation build before running this
+
 Parameters:
-  MailGunSigningKey:
-    Type: String
-    # add mailgun http webhook signing key here
-    Default: ""
-  SNSSubscriptionEmail:
-    Type: String
-    # add email here to receive the SNS notification when mailgun webhook is received.
-    Default: ""
-  SNSTopicName:
-    Type: String
-    Default: MailGunWebHookEvents2
-  LambdaFuncName:
-    Type: String
-    Default: MailgunWebHook2
-  DynamoDBTableName:
-    Type: String
-    Default: MailGunWebHookEvents2
-  APIName:
-    Type: String
-    Default: MailGunWebHook2
-  APIResourcePath:
-    Type: String
-    Default: mailgunwebhook
-  EnvironmentName:
-    Type: String
-    Default: dev
-  AWSRegionSelected:
-    Type: String
-    Default: ap-southeast-1
   S3Bucket:
     Type: String
-    Default: mailgunwebhookbucket2
+    Default: mailgunwebhookbucket
+
   S3Key:
     Type: String
     Default: mailgunwebhooklambda.zip
+
+  MailgunSigningKey:
+    Type: String
+    # add mailgun http webhook signing key here
+    NoEcho: true
+    MinLength: 1
+
+  SNSSubscriptionEmail:
+    Type: String
+    # add email here to receive the SNS notification when mailgun webhook is received.
+    MinLength: 1
+
+  SNSTopicName:
+    Type: String
+    Default: MailgunWebhookEvents
+
+  LambdaFuncName:
+    Type: String
+    Default: MailgunWebhook
+
+  DynamoDBTableName:
+    Type: String
+    Default: MailgunWebhookEvents
+
+  APIName:
+    Type: String
+    Default: MailgunWebhook
+
+  APIResourcePath:
+    Type: String
+    Default: mailgunwebhook
+
+  EnvironmentName:
+    Type: String
+    Default: dev
+
+  AWSRegionSelected:
+    Type: String
+    Default: ap-southeast-1
+
+  # *** This value must always be passed in when creating / updating stack
+  # "NoEcho" is set to true, for security, so token won't be visible when examining the resulting stack
+  GitHubToken:
+    Type: String
+    NoEcho: true
+    MinLength: 1
+
+  # *** The owner of the Github repo for this application.
+  GitHubRepoOwner:
+    Type: String
+    Default: niccololampa
+
+  GitHubRepo:
+    Type: String
+    Default: mailgun-webhook-aws-api-dynamodb-sns
+
+  GitHubBranch:
+    Type: String
+    Default: main
+
+  CodeBuildName:
+    Type: String
+    Default: MailgunWebhookEvents
 
 Resources:
   SNSPublish:
@@ -45,6 +84,7 @@ Resources:
           Protocol: email
       TopicName:
         Ref: SNSTopicName
+
   LambdaFunction:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -60,14 +100,12 @@ Resources:
         Variables:
           AWS_REGION_SELECTED: !Ref AWSRegionSelected
           DYNAMO_DB_TABLE_NAME: !Ref DynamoDBTableName
-          SIGNING_KEY: !Ref MailGunSigningKey
-          SNS_TOPIC_ARN: !Sub
-            - >-
-              arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}
-            - TopicName: !Ref SNSTopicName
+          SIGNING_KEY: !Ref MailgunSigningKey
+          SNS_TOPIC_ARN: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopicName}
     DependsOn:
       - DynamoDBTable
       - SNSPublish
+
   DynamoDBTable:
     Type: "AWS::DynamoDB::Table"
     Properties:
@@ -86,6 +124,7 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: "5"
         WriteCapacityUnits: "5"
+
   APIGatewayRestAPI:
     Type: "AWS::ApiGateway::RestApi"
     Properties:
@@ -95,6 +134,7 @@ Resources:
         endpointConfigurationTypes: REGIONAL
     DependsOn:
       - LambdaFunction
+
   APIGatewayResource:
     Type: "AWS::ApiGateway::Resource"
     Properties:
@@ -106,6 +146,7 @@ Resources:
         Ref: APIResourcePath
     DependsOn:
       - APIGatewayRestAPI
+
   APIGatewayMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
@@ -126,6 +167,7 @@ Resources:
           - LambdaFuncNameArn: !GetAtt LambdaFunction.Arn
     DependsOn:
       - APIGatewayResource
+
   APIGatewayDeployment:
     Type: "AWS::ApiGateway::Deployment"
     Properties:
@@ -134,6 +176,7 @@ Resources:
         Ref: EnvironmentName
     DependsOn:
       - APIGatewayMethod
+
   APIGatewayPermission:
     Type: "AWS::Lambda::Permission"
     Properties:
@@ -142,6 +185,7 @@ Resources:
       Principal: apigateway.amazonaws.com
     DependsOn:
       - APIGatewayDeployment
+
   IAMRole:
     Type: "AWS::IAM::Role"
     DependsOn:
@@ -185,14 +229,81 @@ Resources:
               - Effect: Allow
                 Action:
                   - "sns:*"
-                Resource: !Sub
-                  - >-
-                    arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}
-                  - TopicName: !Ref SNSTopicName
+                Resource: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopicName}
               - Effect: Allow
                 Action:
                   - "s3:*"
-                Resource: !Sub
-                  - >-
-                    arn:aws:s3:::${BucketName}
-                  - BucketName: !Ref S3Bucket
+                Resource: !Sub arn:aws:s3:::${S3Bucket}
+
+  LambdaNodeCodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: PolicyCodebuild
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:*
+                  - codebuild:*
+                  - logs:*
+                  - lambda:*
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - "s3:*"
+                Resource:
+                  - !Sub arn:aws:s3:::${S3Bucket}
+                  - !Sub arn:aws:s3:::${S3Bucket}/*
+
+  # This resource allows to connect CodeBuild with Github using Personal Access Token.
+  CodeBuildSourceCredential:
+    Type: AWS::CodeBuild::SourceCredential
+    Properties:
+      AuthType: PERSONAL_ACCESS_TOKEN
+      ServerType: GITHUB
+      Token: !Ref GitHubToken
+
+  LambaNodeCodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref CodeBuildName
+      Source:
+        Type: GITHUB
+        Location: !Sub https://github.com/${GitHubRepoOwner}/${GitHubRepo}.git
+        GitCloneDepth: 1
+        BuildSpec: buildspec.yml
+      SourceVersion: !Ref GitHubBranch
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+          - - Type: EVENT
+              Pattern: PULL_REQUEST_MERGED
+      Environment:
+        Type: LINUX_CONTAINER
+        Image: aws/codebuild/standard:5.0
+        ComputeType: BUILD_GENERAL1_SMALL
+      ServiceRole: !GetAtt LambdaNodeCodeBuildRole.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+      LogsConfig:
+        CloudWatchLogs:
+          Status: ENABLED
+          GroupName: !Sub ${CodeBuildName}-CodeBuild-Logs
+    DependsOn:
+      - LambdaNodeCodeBuildRole
+      - CodeBuildSourceCredential
+      - LambdaFunction
