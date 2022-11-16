@@ -1,5 +1,6 @@
 import AWS = require("aws-sdk")
 import crypto = require("crypto")
+import { APIGatewayEvent, MailGunHook } from "./types"
 
 AWS.config.update({ region: process.env.AWS_REGION_SELECTED })
 const dynamo = new AWS.DynamoDB.DocumentClient()
@@ -25,8 +26,8 @@ const verify = ({
     return encodedToken === signature
 }
 
-exports.handler = async (event: any) => {
-    const eventJSON = JSON.parse(event.body)
+exports.handler = async (event: APIGatewayEvent) => {
+    const eventJSON: MailGunHook = JSON.parse(event.body)
     let response = {
         statusCode: "200",
         body: "",
