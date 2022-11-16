@@ -1,5 +1,11 @@
 # Mailgun Webhook SWS Lambda DyanamoDB and SNS Notification Service
 
+## Summary of Features 
+- Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway. 
+- AWS SNS publish of Mailgun Webhook details to subscribed emails. 
+- AWS CloudFormation automatic creation of required AWS resources to run this repo. (via bash script) 
+- AWS Codebuild CI/CD to update AWS Lambda function upon merge of commits to this Github repo. 
+
 
 ## AWS CodeFormation Execution (Auto-creation of AWS Resources)
 
