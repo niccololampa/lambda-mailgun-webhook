@@ -69,7 +69,7 @@ Parameters:
 
   GitHubBranch:
     Type: String
-    Default: feature/codebuild
+    Default: main
 
   CodeBuildName:
     Type: String
