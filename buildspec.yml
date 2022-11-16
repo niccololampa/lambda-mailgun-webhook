@@ -1,8 +1,9 @@
 version: 0.2
 env:
     variables:
-        S3Bucket: "mailgunwebhookbucket3"
+        S3Bucket: "mailgunwebhookbucket"
         S3Key: "mailgunwebhooklambda.zip"
+        LambdaFuncName: MailgunWebhook
 phases:
     install:
         runtime-versions:
@@ -20,3 +21,5 @@ phases:
         commands:
             - echo "Uploading/Updating files in the S3 bucket..."
             - aws s3 cp ./$S3Key  s3://$S3Bucket
+            - echo "Updating Lambda Function with uploaded zip file in s3..."
+            - aws lambda update-function-code --function-name $LambdaFuncName --s3-bucket $S3Bucket --s3-key $S3Key
