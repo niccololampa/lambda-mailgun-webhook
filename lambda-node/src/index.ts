@@ -27,9 +27,14 @@ const verify = ({
 
 exports.handler = async (event: any) => {
     const eventJSON = JSON.parse(event.body)
-    let statusCode = "200"
-    let dbwrite = true
-    let snsPublished = false
+    let response = {
+        statusCode: "200",
+        body: "",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        isBase64Encoded: false,
+    }
 
     const { timestamp, token, signature } = eventJSON.signature
 
@@ -38,13 +43,13 @@ exports.handler = async (event: any) => {
 
     // do not process the request if not a mailgun event
     if (!verified) {
-        return {
-            statusCode: 403,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: { error: "Unauthorized" },
+        response = {
+            ...response,
+            statusCode: "403",
+            body: JSON.stringify({ error: "Unauthorized" }),
         }
+
+        return response
     }
 
     // Log for CloudWatch
@@ -65,13 +70,18 @@ exports.handler = async (event: any) => {
     try {
         await dynamo.put(dynamoParam).promise()
     } catch (err) {
-        statusCode = "400"
-        dbwrite = false
-        // body = err.message;
+        console.log(err.message)
+
+        response = {
+            ...response,
+            statusCode: "500",
+            body: JSON.stringify({ error: err.message }),
+        }
+
+        return response
     }
 
     // publish SNS
-
     const snsMessage = {
         Provider: "MAILGUN",
         timestamp: eventJSON["signature"].timestamp,
@@ -90,26 +100,32 @@ exports.handler = async (event: any) => {
 
     // Handle promise's fulfilled/rejected states
     await publishTextPromise
-        .then(function (data) {
+        .then((data) => {
             // Logs for Cloudwatch
             console.log(
                 `Message ${snsParams.Message} sent to the topic ${snsParams.TopicArn}`
             )
             console.log("MessageID is " + data.MessageId)
-            snsPublished = true
+            response = {
+                ...response,
+                body: JSON.stringify({
+                    dbwrite: true,
+                    snsPublished: true,
+                    snsMessage,
+                }),
+            }
         })
-        .catch(function (err) {
+        .catch((err) => {
             console.error(err, err.stack)
+            response = {
+                ...response,
+                statusCode: "500",
+                body: JSON.stringify({ error: err.message }),
+            }
+
+            return response
         })
 
-    const response = {
-        statusCode,
-        headers: {
-            "Content-Type": "application/json",
-        },
-        isBase64Encoded: false,
-        body: JSON.stringify({ dbwrite, snsPublished, snsMessage }),
-    }
-
+    // if everything goes well return original response with status code 200
     return response
 }
