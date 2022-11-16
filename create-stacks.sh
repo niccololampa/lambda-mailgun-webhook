@@ -33,6 +33,12 @@ cd lambda-node
 yarn install
 
 echo "Creating lambda fuction zip file to be uploaded to created S3 Bucket"
+
+if [ -f $S3_Key ]; then
+   rm $S3_Key
+   echo "$S3_Key file is removed for new build"
+fi
+
 yarn build-zip
 
 echo "Uploading lambda function zip file to s3"
