@@ -8,6 +8,7 @@ CLOUDFORMATION_S3_STACK_NAME="mailgunwebhook-s3"
 CLOUDFORMATION_MAIN_STACK_NAME="mailgunwebhook-main"
 S3_BUCKET_NAME="mailgunwebhookbucket"
 S3_Key="mailgunwebhooklambda.zip"
+SNS_TOPIC_NAME="MailgunWebhookEvents"
 
 
 # chose input than arguments for security purposes
@@ -59,7 +60,7 @@ aws cloudformation create-stack \
         --stack-name $CLOUDFORMATION_MAIN_STACK_NAME \
         --capabilities CAPABILITY_IAM \
         --template-body file://cloudformation-api-lambda-dynamodb-sns-cb.yml \
-        --parameters ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET_NAME ParameterKey=GitHubToken,ParameterValue=$GITHUB_TOKEN ParameterKey=MailgunSigningKey,ParameterValue=$MAILGUN_KEY ParameterKey=SNSSubscriptionEmail,ParameterValue=$SNS_EMAIL
+        --parameters ParameterKey=S3Bucket,ParameterValue=$S3_BUCKET_NAME ParameterKey=GitHubToken,ParameterValue=$GITHUB_TOKEN ParameterKey=MailgunSigningKey,ParameterValue=$MAILGUN_KEY ParameterKey=SNSSubscriptionEmail,ParameterValue=$SNS_EMAIL ParameterKey=SNSTopicName,ParameterValue=$SNS_TOPIC_NAME
 
 echo "Waiting for CloudFormation Main Stack to finish..."
 aws cloudformation wait stack-create-complete --stack-name $CLOUDFORMATION_MAIN_STACK_NAME --region $AWS_REGION
