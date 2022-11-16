@@ -47,10 +47,6 @@ Parameters:
     Type: String
     Default: dev
 
-  AWSRegionSelected:
-    Type: String
-    Default: ap-southeast-1
-
   # *** This value must always be passed in when creating / updating stack
   # "NoEcho" is set to true, for security, so token won't be visible when examining the resulting stack
   GitHubToken:
@@ -98,7 +94,7 @@ Resources:
       Role: !GetAtt IAMRole.Arn
       Environment:
         Variables:
-          AWS_REGION_SELECTED: !Ref AWSRegionSelected
+          AWS_REGION_SELECTED: !Ref "AWS::Region"
           DYNAMO_DB_TABLE_NAME: !Ref DynamoDBTableName
           SIGNING_KEY: !Ref MailgunSigningKey
           SNS_TOPIC_ARN: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${SNSTopicName}
