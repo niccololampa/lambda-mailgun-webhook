@@ -79,7 +79,6 @@ exports.handler = async (event: any) => {
     }
 
     // Create promise and SNS service object
-    // TO DO create env for TOPIC ARN.
     const snsParams = {
         Message: JSON.stringify(snsMessage),
         TopicArn: process.env.SNS_TOPIC_ARN,
