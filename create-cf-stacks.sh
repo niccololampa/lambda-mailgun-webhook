@@ -12,11 +12,11 @@ SNS_TOPIC_NAME="MailgunWebhookEvents"
 
 
 # chose input than arguments for security purposes
-read -s -p "Enter Github Auth Token: " GITHUB_TOKEN
+read -e -s -p "Enter Github Auth Token: " GITHUB_TOKEN
 echo
-read -s -p "Enter Mailgun Webhook Signing Key: " MAILGUN_KEY
+read -e -s -p "Enter Mailgun Webhook Signing Key: " MAILGUN_KEY
 echo
-read -p "Enter email for AWS SNS Subscription: " SNS_EMAIL
+read -e -p "Enter email for AWS SNS Subscription: " SNS_EMAIL
 echo
 
 set -eu
