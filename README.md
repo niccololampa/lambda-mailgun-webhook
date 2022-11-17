@@ -4,7 +4,7 @@
 - Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway. 
 - AWS SNS publish of Mailgun Webhook details to subscribed emails. 
 - AWS CloudFormation automatic creation of required AWS resources to run this repo. (via bash script) 
-- AWS Codebuild CI/CD to update AWS Lambda function upon merge of commits to this Github repo. 
+- AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo. 
 
 
 ## AWS CodeFormation Execution (Auto-creation of AWS Resources)
@@ -58,7 +58,29 @@ Login to your account and Proceed to `Sending>Webhooks` then paste the copied AP
 Once tested you will receive a response coming from our AWS Lambda Function. 
 
 
+### Features
+### Mailgun Webhook Processing 
+Once a the webhook is received by our Gateway API and processed by our Lambda this app will do the following: 
 
+### Saving of sent Mailgun webhook in DynamoDB. 
+![Screen Shot 2022-11-17 at 9 02 35 AM](https://user-images.githubusercontent.com/37615906/202328549-926cb3d6-3058-430a-b0a9-a833499b03e2.png)
+
+### Sending of AWS SNS Notification to subscribed email/s
+![Screen Shot 2022-11-17 at 9 04 17 AM](https://user-images.githubusercontent.com/37615906/202328720-cd9d3d4e-09cd-4339-9fe1-cc1d9aaa4615.png)
+
+
+### Automatic CloudFormation Deploy of Application Stacks (Automatic AWS allocation of resources). 
+
+The `create-cf-stacks.sh` script will automatically create all the required AWS resources when executed. No more time consuming creation/integration of AWS resources via CLI or Online Console. 
+
+![Screen Shot 2022-11-17 at 9 09 07 AM](https://user-images.githubusercontent.com/37615906/202329455-dfcabe56-5063-4413-8933-73999002a3be.png)
+![Screen Shot 2022-11-17 at 9 15 49 AM](https://user-images.githubusercontent.com/37615906/202330083-f326fcba-e273-4ea0-900a-1e021d78c9d2.png)
+
+### Auto-update of AWS Lambda Function 
+
+Our deployment is integrated to this Github repo's main branch via AWS CodeBuild. Any PR merged to the main branch of this repo will trigger a build/update of our AWS Lambda. See `buildspec.yml`. 
+![Screen Shot 2022-11-17 at 9 22 16 AM](https://user-images.githubusercontent.com/37615906/202330907-d10ab24b-0f13-4fa0-a3a8-962a54cac90f.png)
+![Screen Shot 2022-11-17 at 9 24 35 AM](https://user-images.githubusercontent.com/37615906/202331108-b29a2bfa-9004-4cac-b4c6-e56c0cd661b1.png)
 
 
 
