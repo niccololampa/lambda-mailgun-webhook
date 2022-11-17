@@ -1,10 +1,10 @@
 # Mailgun Webhook SWS Lambda DyanamoDB and SNS Notification Service
 
 ## Summary of Features 
-- Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway. 
-- AWS SNS publish of Mailgun Webhook details to subscribed emails. 
-- AWS CloudFormation automatic creation of required AWS resources to run this repo. (via bash script) 
-- AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo. 
+- [Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
+- [AWS SNS publish of Mailgun Webhook details to subscribed emails](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
+- [AWS CloudFormation automatic creation of required AWS resources to run this repo. (via bash script)](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
+- [AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
 
 
 ## AWS CodeFormation Execution (Auto-creation of AWS Resources)
@@ -58,7 +58,7 @@ Login to your account and Proceed to `Sending>Webhooks` then paste the copied AP
 Once tested you will receive a response coming from our AWS Lambda Function. 
 
 
-### Features
+## Features
 ### Mailgun Webhook Processing 
 Once a the webhook is received by our Gateway API and processed by our Lambda this app will do the following: 
 
