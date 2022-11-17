@@ -32,7 +32,8 @@ chmod u+x create-cf-stacks.sh
 ./create-cf-stacks.sh
 ```
 
-This script will automate the creation of the requires AWS resources (S3, Lambda, API Gateway, DynamoDB, SNS, CodeBuild, IAM Roles).
+This script will automate the creation of the required AWS resources (S3, Lambda, API Gateway, DynamoDB, SNS, CodeBuild, IAM Roles, etc).
+
 ![Screen Shot 2022-11-17 at 10 58 59 AM](https://user-images.githubusercontent.com/37615906/202344191-62be4497-09e0-4881-8762-daa390ac0c74.png)
 
 Once executed the terminal will prompt you for the Github Auth Token, Mailgun Webhook Signing Key and Email to be used for subscription.
