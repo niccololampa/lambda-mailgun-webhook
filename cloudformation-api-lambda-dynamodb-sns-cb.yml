@@ -285,8 +285,6 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: PUSH
-          - - Type: EVENT
               Pattern: PULL_REQUEST_MERGED
       Environment:
         Type: LINUX_CONTAINER
