@@ -1,4 +1,4 @@
-# Mailgun Webhook SWS Lambda DyanamoDB and SNS Notification Service
+# Mailgun Webhook AWS Lambda DyanamoDB and SNS Notification Service
 
 ## Table of Contents
 - [Summary of Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#summary-of-features)
