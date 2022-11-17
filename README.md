@@ -9,7 +9,7 @@
     - [AWS SNS Notification](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
     - [AWS CloudFormation](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
     - [AWS Codebuild CI/CD](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
-- [Github Token and Mailgun Webhook SigningToken](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/blob/feature/README/README.md#acquiring-github-auth-token-and-mail-gun-webhook-signing-key)
+- [Github Token and Mailgun Webhook Signing Token](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/blob/feature/README/README.md#acquiring-github-auth-token-and-mail-gun-webhook-signing-key)
     
 ## Summary of Features 
 - [Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
