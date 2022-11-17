@@ -1,21 +1,21 @@
 # Mailgun Webhook AWS Lambda DyanamoDB and SNS Notification Service
 
 ## Table of Contents
-- [Summary of Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#summary-of-features)
-- [Code Execution](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#execution--deployment-via-aws-codeformation-execution-auto-creation-of-aws-resources)
-- [How to Test](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#how-to-test)
-- [Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#features)
-    - [AWS DynamoDB](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
-    - [AWS SNS Notification](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
-    - [AWS CloudFormation](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
-    - [AWS Codebuild CI/CD](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
+- [Summary of Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#summary-of-features)
+- [Code Execution](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#execution--deployment-via-aws-codeformation-execution-auto-creation-of-aws-resources)
+- [How to Test](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#how-to-test)
+- [Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#features)
+    - [AWS DynamoDB](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#saving-of-sent-mailgun-webhook-in-dynamodb) 
+    - [AWS SNS Notification](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#sending-of-aws-sns-notification-to-subscribed-emails) 
+    - [AWS CloudFormation](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
+    - [AWS Codebuild CI/CD](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#auto-update-of-aws-lambda-function) 
 - [Github Token and Mailgun Webhook Signing Token](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/blob/feature/README/README.md#acquiring-github-auth-token-and-mail-gun-webhook-signing-key)
     
 ## Summary of Features 
-- [Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
-- [AWS SNS publish of Mailgun Webhook details to subscribed emails](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
-- [AWS CloudFormation automatic creation of required AWS resources to run this repo (via bash script).](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
-- [AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
+- [Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#saving-of-sent-mailgun-webhook-in-dynamodb) 
+- [AWS SNS publish of Mailgun Webhook details to subscribed emails](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#sending-of-aws-sns-notification-to-subscribed-emails) 
+- [AWS CloudFormation automatic creation of required AWS resources to run this repo (via bash script).](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
+- [AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/main#auto-update-of-aws-lambda-function) 
 
 ## Execution / Deployment via AWS CodeFormation Execution (Auto-creation of AWS Resources)
 
@@ -30,8 +30,7 @@ chmod u+x create-cf-stacks.sh
 ./create-cf-stacks.sh
 ```
 This script will automate the creation of the requires AWS resources (S3, Lambda, API Gateway,  DynamoDB, SNS, CodeBuild, IAM Roles).
-![Screen Shot 2022-11-16 at 12 34 22 PM](https://user-images.githubusercontent.com/37615906/202223763-fea91a0f-0f90-42f0-acb1-2a3c8a34b0c6.png)
-
+![Screen Shot 2022-11-17 at 10 58 59 AM](https://user-images.githubusercontent.com/37615906/202344191-62be4497-09e0-4881-8762-daa390ac0c74.png)
 
 Once executed the terminal will prompt you for the Github Auth Token, Mailgun Webhook Signing Key and Email to be used for subscription.
 
