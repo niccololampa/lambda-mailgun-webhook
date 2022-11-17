@@ -2,11 +2,11 @@
 
 ## Table of Contents
 - [Summary of Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#summary-of-features)
-- Code Execution
+- [Code Execution](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#execution--deployment-via-aws-codeformation-execution-auto-creation-of-aws-resources)
 - [How to Test](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#how-to-test)
 - [Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#features)
     - [AWS DynamoDB](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
-    - [AWS SNS Notificatio](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
+    - [AWS SNS Notification](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
     - [AWS CloudFormation](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
     - [AWS Codebuild CI/CD](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
 
