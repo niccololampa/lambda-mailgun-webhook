@@ -9,11 +9,12 @@
     - [AWS SNS Notification](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
     - [AWS CloudFormation](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
     - [AWS Codebuild CI/CD](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
-
+- [Acquiring Github Token and Mailgun Webhook Signing Token]()
+    
 ## Summary of Features 
 - [Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
 - [AWS SNS publish of Mailgun Webhook details to subscribed emails](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
-- [AWS CloudFormation automatic creation of required AWS resources to run this repo. (via bash script)](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
+- [AWS CloudFormation automatic creation of required AWS resources to run this repo (via bash script).](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
 - [AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
 
 ## Execution / Deployment via AWS CodeFormation Execution (Auto-creation of AWS Resources)
@@ -34,11 +35,7 @@ This script will automate the creation of the requires AWS resources (S3, Lambda
 
 Once executed the terminal will prompt you for the Github Auth Token, Mailgun Webhook Signing Key and Email to be used for subscription.
 
-The Github Token will be used for connecting your AWS account to github account for CodeBuild configurations. (CodeBuild will track github repo to update the AWS Lambda function) 
-
-The mailgun signing key is used to verify that the hooks sent via API gateway are coming from the Mailgun account of the user. 
-
-For  the Github Token and Mailgun  Signing key will be discussed here. 
+Details about the Github Token and Mailgun Signing key will be discussed here. 
 
 You can customize the AWS resources by updating the variables section of `create-sf-stacks.sh` 
 ![Screen Shot 2022-11-16 at 11 23 57 PM](https://user-images.githubusercontent.com/37615906/202223528-16961e42-49a2-4586-8fe9-5a2d7507fedf.png)
@@ -62,8 +59,11 @@ Go to `Stages > / > /mailgunwebhook > POST` and copy the **Invoke URL**.
 
 
 ### Test Using Mailgun.com
+Go and login to [Mailgun.com](https://login.mailgun.com/login/).
 
-Login to your account and Proceed to `Sending>Webhooks` then paste the copied API Gateway URL and test webhook.
+Once logged in go to `Sending > Webhooks` on the right navigation panel.
+
+Paste the copied API Gateway URL and click `Test webhook`.
 ![Screen Shot 2022-11-17 at 8 53 32 AM](https://user-images.githubusercontent.com/37615906/202327394-102fdd42-bb7b-4b44-ad36-2022bdf71aa9.png)
 
 Once tested you will receive a response coming from our AWS Lambda Function. 
@@ -92,6 +92,32 @@ The `create-cf-stacks.sh` script will automatically create all the required AWS 
 Our deployment is integrated to this Github repo's main branch via AWS CodeBuild. Any PR merged to the main branch of this repo will trigger a build/update of our AWS Lambda. See `buildspec.yml`. 
 ![Screen Shot 2022-11-17 at 9 22 16 AM](https://user-images.githubusercontent.com/37615906/202330907-d10ab24b-0f13-4fa0-a3a8-962a54cac90f.png)
 ![Screen Shot 2022-11-17 at 9 24 35 AM](https://user-images.githubusercontent.com/37615906/202331108-b29a2bfa-9004-4cac-b4c6-e56c0cd661b1.png)
+
+## Acquiring Github Auth Token and Mail Gun Webhook Signing Key
+
+### Github Auth Token
+
+The Github Token will be used for connecting your AWS account to Github account for CodeBuild configurations. CodeBuild will track Github repo's main branch to update the AWS Lambda function.
+
+Go to [New Personal Access Tokens (Classic) Page](https://github.com/settings/tokens/new).
+
+Replicate the following configuration shown on the images. 
+
+![Screen Shot 2022-11-17 at 10 40 10 AM](https://user-images.githubusercontent.com/37615906/202341525-ac212caa-4471-4d13-8343-ac7307837478.png)
+
+![Screen Shot 2022-11-17 at 10 40 28 AM](https://user-images.githubusercontent.com/37615906/202341538-1fcbc605-bdee-44fd-bd69-a865060cfe77.png)
+
+Then Generate token and copy the token for  `create-cf-stacks.sh` prompt. 
+
+### Mailgun Webhook Sigining Key
+The Mailgun webhook signing key is used to verify that the hooks received by AWS Lambda via API gateway are coming from the Mailgun account of the user. 
+
+To get Mailgun webhook signing key go and login to [Mailgun.com](https://login.mailgun.com/login/).
+
+Once logged in go to `Sending > Webhooks` on the right navigation panel.
+
+On this page you will see the HTTP webhook signing key. Copy this for the `create-cf-stacks.sh` prompt. 
+![Screen Shot 2022-11-17 at 10 30 51 AM](https://user-images.githubusercontent.com/37615906/202340248-66c1e928-ae95-42b1-94ad-ca03f0af0c67.png)
 
 
 
