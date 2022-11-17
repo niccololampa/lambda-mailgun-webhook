@@ -32,3 +32,39 @@ For  the Github Token and Mailgun  Signing key will be discussed here.
 You can customize the AWS resources by updating the variables section of `create-sf-stacks.sh` 
 ![Screen Shot 2022-11-16 at 11 23 57 PM](https://user-images.githubusercontent.com/37615906/202223528-16961e42-49a2-4586-8fe9-5a2d7507fedf.png)
 
+## How to Test 
+
+After executing the `create-cf-stacks.sh` scripts you can test the application by sending a mailgun webhook. To do this follow the following steps: 
+
+### Confrim SNS Subscription
+
+ Go to the email you provided and confirm subscription to SNS Topic.
+![Screen Shot 2022-11-17 at 8 32 55 AM](https://user-images.githubusercontent.com/37615906/202324956-83db592a-e686-45ed-939e-9570c37bbf61.png)
+![Screen Shot 2022-11-17 at 8 33 18 AM](https://user-images.githubusercontent.com/37615906/202324969-80712c0f-5c2f-4bf1-9999-793abb099607.png)
+
+### Copy AWS API Gateway URL for mailgunwebhook.
+
+Go to your [AWS API Gateway Page](https://ap-southeast-1.console.aws.amazon.com/apigateway/) and click on MailGunWebhook API.
+
+Go to `Stages > / > /mailgunwebhook > POST` and copy the **Invoke URL**. 
+![Screen Shot 2022-11-17 at 8 44 48 AM](https://user-images.githubusercontent.com/37615906/202326368-306c26c0-3e6c-474b-b5b7-d161f94c633e.png)
+
+
+## Test Using Mailgun.com
+
+Login to your account and Proceed to `Sending>Webhooks` then paste the copied API Gateway URL and test webhook.
+![Screen Shot 2022-11-17 at 8 53 32 AM](https://user-images.githubusercontent.com/37615906/202327394-102fdd42-bb7b-4b44-ad36-2022bdf71aa9.png)
+
+Once tested you will receive a response coming from our AWS Lambda Function. 
+
+
+
+
+
+
+
+
+
+
+
+
