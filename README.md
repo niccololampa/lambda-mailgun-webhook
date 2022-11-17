@@ -1,15 +1,26 @@
 # Mailgun Webhook SWS Lambda DyanamoDB and SNS Notification Service
 
+## Table of Contents
+- [Summary of Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#summary-of-features)
+- Code Execution
+- [How to Test](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#how-to-test)
+- [Features](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#features)
+    - [AWS DynamoDB](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
+    - [AWS SNS Notificatio](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
+    - [AWS CloudFormation](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
+    - [AWS Codebuild CI/CD](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
+
 ## Summary of Features 
 - [Saving in AWS DynamoDB of Mailgun Webhook details received via AWS API Gateway](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#saving-of-sent-mailgun-webhook-in-dynamodb) 
 - [AWS SNS publish of Mailgun Webhook details to subscribed emails](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#sending-of-aws-sns-notification-to-subscribed-emails) 
 - [AWS CloudFormation automatic creation of required AWS resources to run this repo. (via bash script)](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
 - [AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns/tree/feature/README#auto-update-of-aws-lambda-function) 
 
-
-## AWS CodeFormation Execution (Auto-creation of AWS Resources)
+## Execution / Deployment via AWS CodeFormation Execution (Auto-creation of AWS Resources)
 
 To create the necessary AWS resources, this repo implements infracstructure by code via CloudFormation. 
+
+**You need to have AWS CLI and Yarn installed in your system to execute the script file.**
 
 Run the following: 
 
@@ -50,7 +61,7 @@ Go to `Stages > / > /mailgunwebhook > POST` and copy the **Invoke URL**.
 ![Screen Shot 2022-11-17 at 8 44 48 AM](https://user-images.githubusercontent.com/37615906/202326368-306c26c0-3e6c-474b-b5b7-d161f94c633e.png)
 
 
-## Test Using Mailgun.com
+### Test Using Mailgun.com
 
 Login to your account and Proceed to `Sending>Webhooks` then paste the copied API Gateway URL and test webhook.
 ![Screen Shot 2022-11-17 at 8 53 32 AM](https://user-images.githubusercontent.com/37615906/202327394-102fdd42-bb7b-4b44-ad36-2022bdf71aa9.png)
