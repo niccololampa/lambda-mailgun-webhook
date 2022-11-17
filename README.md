@@ -19,7 +19,7 @@
 - [AWS CloudFormation automatic creation of required AWS resources to run this repo (via bash script).](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns#automatic-cloudformation-deploy-of-application-stacks-automatic-aws-allocation-of-resources)
 - [AWS Codebuild CI/CD auto-update of AWS Lambda function upon merge of commits to this Github repo](https://github.com/niccololampa/mailgun-webhook-aws-api-dynamodb-sns#auto-update-of-aws-lambda-function)
 
-## Execution / Deployment via AWS CodeFormation Execution (Auto-creation of AWS Resources)
+## Execution / Deployment via AWS CodeFormation (Auto-creation of AWS Resources)
 
 To create the necessary AWS resources, this repo implements infracstructure by code via CloudFormation.
 
